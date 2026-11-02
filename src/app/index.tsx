@@ -1,18 +1,13 @@
-import { StyleSheet, Text } from "react-native";
+import { Text } from "react-native";
 
 import { Screen } from "@/components/screen";
+import { ThemedText } from "@/components/themed-text";
 
 export default function Index() {
   return (
     <Screen>
-      <Text>Edit src/app/index.tsx to edit this screen.</Text>
+      <ThemedText variant="title">Edit src/app/index.tsx to edit this screen.</ThemedText>
+      <Text className="text-red-500">Tiêu đề</Text>
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
