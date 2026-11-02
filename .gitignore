@@ -41,3 +41,7 @@ example
 # generated native folders
 /ios
 /android
+
+# local docs
+/CLAUDE.md
+/docs/doc-jwetlakay-mobile.html
