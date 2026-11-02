@@ -23,6 +23,8 @@ export const light = {
   brandSoft: "rgba(242,106,15,0.10)",
   brandInk: "#C2540A",
   live: "#EF4444",
+  /** Error banner / locked-account box background. */
+  liveSoft: "rgba(239,68,68,0.10)",
   up: "#22C55E",
   win: "#16A34A",
   header: "#FFFFFF",
@@ -51,6 +53,7 @@ export const dark: typeof light = {
   brandSoft: "rgba(255,122,26,0.14)",
   brandInk: "#FF9A4D",
   live: "#EF4444",
+  liveSoft: "rgba(239,68,68,0.16)",
   up: "#22C55E",
   win: "#34D399",
   header: "#050E22",
