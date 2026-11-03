@@ -29,6 +29,8 @@ export const light = {
   win: "#16A34A",
   header: "#FFFFFF",
   nav: "#FFFFFF",
+  /** King of Odds ticker: odds value (web noti.winning OddTag). */
+  tickerOdd: "#C2540A",
 };
 
 export const dark: typeof light = {
@@ -58,6 +60,7 @@ export const dark: typeof light = {
   win: "#34D399",
   header: "#050E22",
   nav: "#081631",
+  tickerOdd: "#39FF6A",
 };
 
 export type ThemeTokens = typeof light;
@@ -73,4 +76,8 @@ export const WALLET = {
 /** Scrims stay the same in both modes. `loading` = web LoadingSpinner backdrop (spec Phần B §0.6). */
 export const SCRIM = {
   loading: "rgba(0,0,0,0.6)",
+  /** Web DrawerModal.css `.jw-drawer-scrim`. */
+  drawer: "rgba(0,0,0,0.5)",
+  /** Web dialogStyle overlay (ConfirmModal). */
+  dialog: "rgba(0,0,0,0.55)",
 } as const;

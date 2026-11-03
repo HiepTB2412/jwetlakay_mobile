@@ -19,6 +19,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { LoadingProvider } from "@/components/loading-overlay";
 import { ToastProvider } from "@/components/toast";
+import { AppDrawer, AppHeader, DrawerProvider } from "@/features/app-shell";
 import { AuthProvider, useAuth } from "@/features/auth";
 import { languageReady } from "@/i18n";
 import { useSignatureRejectedToast } from "@/lib/api/use-signature-rejected-toast";
@@ -40,7 +41,9 @@ export default function RootLayout() {
               <LoadingProvider>
                 <QueryClientProvider client={queryClient}>
                   <AuthProvider>
-                    <ThemedStack />
+                    <DrawerProvider>
+                      <ThemedStack />
+                    </DrawerProvider>
                   </AuthProvider>
                 </QueryClientProvider>
               </LoadingProvider>
@@ -110,12 +113,14 @@ function ThemedStack() {
           headerTitleStyle: { fontFamily: FONT_FAMILY, fontWeight: "600" },
         }}
       >
-        <Stack.Screen name="index" options={{ title: t("home") }} />
+        {/* Main screens use the app header (spec Phần B §3.3); auth screens draw their own. */}
+        <Stack.Screen name="index" options={{ title: t("home"), header: () => <AppHeader /> }} />
         <Stack.Screen name="auth" options={{ headerShown: false }} />
         <Stack.Screen name="fb" options={{ headerShown: false }} />
         <Stack.Screen name="sms" options={{ headerShown: false }} />
         <Stack.Screen name="gg" options={{ headerShown: false }} />
       </Stack>
+      <AppDrawer />
     </NavigationThemeProvider>
   );
 }

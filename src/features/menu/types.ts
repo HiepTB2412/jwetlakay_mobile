@@ -6,7 +6,8 @@
  */
 export type MenuItem = {
   id: string;
-  code: string;
+  /** Can be null on production (e.g. the GIFTCODE item, checked 2026-11-03). */
+  code: string | null;
   name: string;
   image: string;
   imageMobile: string;

@@ -85,4 +85,42 @@ export const vi: Record<keyof typeof en, string> = {
   // Logout
   logOut: "Đăng xuất",
   logoutDescription: "Bạn có chắc chắn muốn đăng xuất không?",
+
+  // App shell
+  menu: "Menu",
+  featureComingSoon: "Tính năng đang được phát triển.",
+  hotTag: "HOT",
+  mainWallet: "Ví chính",
+  promotionWallet: "Ví khuyến mại",
+  freeBetWallet: "Ví cược miễn phí",
+  commissionWallet: "Ví hoa hồng",
+  walletMainShort: "Main", // [WEB-PARITY] hard-coded English on the web
+  walletPromoShort: "Promo",
+  depositNow: "Nạp ngay",
+  deposit: "Nạp tiền",
+  withdraw: "Rút tiền",
+  transactionHistory: "Lịch sử giao dịch",
+  betHistory: "Lịch sử cược",
+  notification: "Thông báo",
+  inviteFriends: "Mời bạn bè",
+  profile: "Hồ sơ",
+  promotion: "Khuyến mại",
+  contact: "Liên hệ",
+  theme: "Giao diện",
+  language: "Ngôn ngữ",
+  endUser: "End User",
+  agent: "Agent",
+
+  // King of Odds ticker. [WEB-PARITY] Web VI copy as is (spec notes it is a poor translation);
+  // the countdown is hard-coded English on the web for every language.
+  king_of_odd: "King Of Odds",
+  leading_at: "leading at",
+  odd: "Lẻ",
+  prize: "Prize",
+  countdownDays_one: "{{count}} day left",
+  countdownDays_other: "{{count}} days left",
+  countdownHours_one: "{{count}} hour left",
+  countdownHours_other: "{{count}} hours left",
+  countdownMinutes: "{{count}} min left",
+  countdownSeconds: "{{count}} sec left",
 };

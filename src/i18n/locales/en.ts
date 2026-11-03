@@ -82,6 +82,43 @@ export const en = {
   // Logout
   logOut: "Log out",
   logoutDescription: "Are you sure you want to log out?",
+
+  // App shell: header, wallet menu, drawer (spec Phần B §3.3–3.6)
+  menu: "Menu",
+  featureComingSoon: "This feature is coming soon.", // new: target screen not built yet
+  hotTag: "HOT",
+  mainWallet: "Main wallet",
+  promotionWallet: "Promotion wallet",
+  freeBetWallet: "Free Bet Wallet",
+  commissionWallet: "Commission wallet",
+  walletMainShort: "Main", // web hard-codes this label in English
+  walletPromoShort: "Promo", // web hard-codes this label in English
+  depositNow: "Deposit now",
+  deposit: "Deposit",
+  withdraw: "Withdraw",
+  transactionHistory: "Transaction history",
+  betHistory: "Betting history",
+  notification: "Notification",
+  inviteFriends: "Invite friends",
+  profile: "Profile",
+  promotion: "Promotion",
+  contact: "Contact Us",
+  theme: "Theme",
+  language: "Language",
+  endUser: "End User",
+  agent: "Agent",
+
+  // King of Odds ticker (spec Phần B §3.5). Countdown is hard-coded English on the web.
+  king_of_odd: "King of Odds",
+  leading_at: "is leading with",
+  odd: "odds",
+  prize: "Prize",
+  countdownDays_one: "{{count}} day left",
+  countdownDays_other: "{{count}} days left",
+  countdownHours_one: "{{count}} hour left",
+  countdownHours_other: "{{count}} hours left",
+  countdownMinutes: "{{count}} min left",
+  countdownSeconds: "{{count}} sec left",
 };
 
 export type TranslationKey = keyof typeof en;
