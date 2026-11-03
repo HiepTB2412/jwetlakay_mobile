@@ -58,10 +58,15 @@ type ResendOtpProps = {
   remaining: number;
   sending: boolean;
   onResend: () => void;
+  /**
+   * Text while counting down: login/forgot show "Resend after (Ns)", register shows
+   * "Resend verification code (Ns)" (spec Phần B §1.2).
+   */
+  countdownLabel?: "resendAfter" | "resendVerificationCode";
 };
 
 /** "Didn't receive the code?" + resend link with a 60s countdown. */
-export function ResendOtp({ remaining, sending, onResend }: ResendOtpProps) {
+export function ResendOtp({ remaining, sending, onResend, countdownLabel = "resendAfter" }: ResendOtpProps) {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const disabled = remaining > 0 || sending;
@@ -73,7 +78,7 @@ export function ResendOtp({ remaining, sending, onResend }: ResendOtpProps) {
       </ThemedText>
       <Pressable accessibilityRole="button" accessibilityState={{ disabled }} disabled={disabled} hitSlop={8} onPress={onResend}>
         <ThemedText variant="link" style={{ color: disabled ? colors.muted : colors.brand }}>
-          {remaining > 0 ? `${t("resendAfter")} (${remaining}s)` : t("resendVerificationCode")}
+          {remaining > 0 ? `${t(countdownLabel)} (${remaining}s)` : t("resendVerificationCode")}
         </ThemedText>
       </Pressable>
     </View>

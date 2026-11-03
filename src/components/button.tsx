@@ -1,5 +1,6 @@
+import { SymbolView } from "expo-symbols";
 import { useState } from "react";
-import { ActivityIndicator, Pressable, StyleSheet, type StyleProp, type ViewStyle } from "react-native";
+import { ActivityIndicator, Pressable, StyleSheet, View, type StyleProp, type ViewStyle } from "react-native";
 
 import { radius, sizes, useTheme } from "@/theme";
 
@@ -12,11 +13,13 @@ type ButtonProps = {
   /** Shows a spinner and blocks presses (spec Phần B §1.1 LinearButton). */
   loading?: boolean;
   disabled?: boolean;
+  /** Trailing "→" after the label (web Next buttons, spec Phần B §1.1/1.2/1.4). */
+  arrow?: boolean;
   style?: StyleProp<ViewStyle>;
 };
 
 /** Full-width form button: 50px high, radius 12, 16px label (spec Phần G §6). */
-export function Button({ title, onPress, variant = "primary", loading = false, disabled = false, style }: ButtonProps) {
+export function Button({ title, onPress, variant = "primary", loading = false, disabled = false, arrow = false, style }: ButtonProps) {
   const { colors } = useTheme();
   // Pressed state is tracked here because NativeWind's Pressable interop drops a
   // function-form `style` ({ pressed }) => …, leaving the button unstyled.
@@ -45,9 +48,18 @@ export function Button({ title, onPress, variant = "primary", loading = false, d
       {loading ? (
         <ActivityIndicator color={labelColor} />
       ) : (
-        <ThemedText variant="button" style={{ color: labelColor }}>
-          {title}
-        </ThemedText>
+        <View style={styles.content}>
+          <ThemedText variant="button" style={{ color: labelColor }}>
+            {title}
+          </ThemedText>
+          {arrow ? (
+            <SymbolView
+              name={{ ios: "arrow.right", android: "arrow_forward", web: "arrow_forward" }}
+              size={18}
+              tintColor={labelColor}
+            />
+          ) : null}
+        </View>
       )}
     </Pressable>
   );
@@ -61,5 +73,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 16,
   },
+  content: { flexDirection: "row", alignItems: "center", gap: 8 },
   disabled: { opacity: 0.5 },
 });

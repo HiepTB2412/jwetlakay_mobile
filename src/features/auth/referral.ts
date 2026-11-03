@@ -1,4 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useGlobalSearchParams } from "expo-router";
+import { useEffect } from "react";
 
 import type { UtmParams } from "./types";
 
@@ -66,4 +68,24 @@ export async function getUtmPayload(): Promise<UtmParams> {
     if (stored[query]) payload[field] = stored[query];
   }
   return payload;
+}
+
+/**
+ * Stores `ref` / `referral_code` and `utm_*` from whatever link opened the app, not only the
+ * register screen (web QueryProvider reads them from any landing URL). Mount once at the root.
+ */
+export function useCaptureReferralParams(): void {
+  const params = useGlobalSearchParams();
+  const ref = params.ref ?? params.referral_code;
+  const code = typeof ref === "string" ? ref : undefined;
+  const utmKey = Object.keys(UTM_FIELDS)
+    .map((key) => params[key])
+    .join("|");
+
+  useEffect(() => {
+    if (code) void saveReferralCode(code);
+    // utmKey stands in for `params`, which is a new object on every navigation.
+    void saveUtmFromParams(params);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [code, utmKey]);
 }

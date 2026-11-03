@@ -246,6 +246,7 @@ export function RegisterScreen() {
             accessibilityLabel={t("enterVerificationCodeLabel")}
           />
           <ResendOtp
+            countdownLabel="resendVerificationCode"
             remaining={countdown.remaining}
             sending={resending}
             onResend={resendOtp}
@@ -350,6 +351,7 @@ export function RegisterScreen() {
 
       <Button
         title={step === "details" ? t("register") : t("next")}
+        arrow={step !== "details"}
         loading={submitting}
         onPress={onSubmit}
       />

@@ -23,3 +23,24 @@ export type LuckySpinList = {
   turnToDay?: number;
   turnTomorrow?: number;
 };
+
+/** `GET lucky-spin/history` row (spec Phần B §6.3c). */
+export type LuckySpinHistoryItem = {
+  createdAt: string;
+  luckySpinName: string;
+  rewardValue: number;
+  /** GOLD | POINT | COMMISSION | FREE_BET | TURN_GAME | … */
+  rewardWallet: string;
+  /** FAIL | REWARDED | REWARDED_PENDING | … */
+  status: string;
+  [field: string]: unknown;
+};
+
+/** A wheel sector: a reward plus its color (web `PrizeItem`). */
+export type Prize = {
+  id: string;
+  name: string;
+  icon: string;
+  description: string;
+  color: string;
+};

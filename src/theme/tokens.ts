@@ -80,4 +80,46 @@ export const SCRIM = {
   drawer: "rgba(0,0,0,0.5)",
   /** Web dialogStyle overlay (ConfirmModal). */
   dialog: "rgba(0,0,0,0.55)",
+  /** Full-screen promo popups (news popup, Lucky Spin wheel). */
+  popup: "rgba(0,0,0,0.75)",
+  /** Lucky Spin win / history / guest reward modals. */
+  popupStrong: "rgba(0,0,0,0.85)",
+  /** Ring around the round close artwork (web `ic_btn_close` with 2px #ccc). */
+  closeRing: "#CCCCCC",
+  /** Disc behind the small round close button. */
+  closeDisc: "rgba(0,0,0,0.35)",
 } as const;
+
+// Lucky Spin artwork colors (web minigame `DEFAULT_COLORS*`, PopupShowLuckySpin /
+// PopupShowHalfLuckySpin). Same in light and dark: they are part of the wheel artwork.
+export const LUCKY_SPIN_SECTORS = [
+  "#C1172E",
+  "#C016AF",
+  "#6317C1",
+  "#1732C1",
+  "#175BC0",
+  "#16C099",
+  "#16C144",
+  "#E88726",
+  "#F1C40F",
+] as const;
+
+export const LUCKY_SPIN_SECTORS_HALF = ["#16C144", "#F1C40F", "#C1172E", "#1732C1", "#16C099"] as const;
+
+export const LUCKY_SPIN = {
+  wheelBase: "#000000",
+  sectorEdge: "rgba(255,255,255,0.4)",
+  winnerGlow: "#FFD700",
+  text: "#FFFFFF",
+  tryText: "#5F2F0B",
+  rewardCard: "#081930",
+  historyTable: "rgba(0,0,0,0.4)",
+  amount: "#F1C40F",
+  failed: "#FF5A5A",
+  success: "#3CCF5C",
+  loginLink: "#69A9F9",
+  miniToggle: "#0F8663",
+  miniArrow: "#FFE92B",
+  shadow: "#000000",
+} as const;
+

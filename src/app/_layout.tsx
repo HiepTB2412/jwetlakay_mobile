@@ -20,7 +20,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { LoadingProvider } from "@/components/loading-overlay";
 import { ToastProvider } from "@/components/toast";
 import { AppDrawer, AppHeader, DrawerProvider } from "@/features/app-shell";
-import { AuthProvider, useAuth } from "@/features/auth";
+import { AuthProvider, useAuth, useCaptureReferralParams } from "@/features/auth";
 import { languageReady } from "@/i18n";
 import { useSignatureRejectedToast } from "@/lib/api/use-signature-rejected-toast";
 import { queryClient } from "@/lib/query/query-client";
@@ -79,6 +79,7 @@ function ThemedStack() {
   }, [isInitializing]);
 
   useSignatureRejectedToast();
+  useCaptureReferralParams();
 
   useEffect(() => {
     SystemUI.setBackgroundColorAsync(colors.bg);

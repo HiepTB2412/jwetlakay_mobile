@@ -119,6 +119,39 @@ export const en = {
   countdownHours_other: "{{count}} hours left",
   countdownMinutes: "{{count}} min left",
   countdownSeconds: "{{count}} sec left",
+
+  // Lucky Spin (spec Phần B §6.2–6.4)
+  luckySpin: "Lucky Spin", // new (accessibility)
+  spin: "Spin Now",
+  out_of_spin: "Out Of Spin",
+  you_have: "You have",
+  spin_ticket: "Spin Ticket",
+  today_ticket: "Today's Spin Ticket",
+  tomorrow_ticket: "Tomorrow's Spin Ticket",
+  ticket: "Ticket",
+  text_title: "Congratulations!",
+  text_des: "You have received the reward.",
+  history: "History", // missing on the web (shows the raw key)
+  day: "Day",
+  reward: "Reward",
+  amount: "Amount",
+  wallet: "Wallet",
+  status: "Status",
+  turn: "Turn",
+  failed: "Failed",
+  success: "Success",
+  pending: "Pending",
+  doNotHaveHistory: "You don't have any history.",
+  spinFailed: "Spin failed", // web fallback text
+  historyFailed: "Get history failed", // web fallback text
+  previousPage: "Previous page", // new (accessibility)
+  nextPage: "Next page", // new (accessibility)
+  try_your_lucky_now: "Try Your Lucky Now",
+  congratulations: "Congratulations!",
+  lucky_you_have_received_the_reward: "You have received the reward:",
+  enter_your_phone: "Enter your phone number to receive:",
+  selectCountryCode: "Select country code",
+  reward_for_new: "Reward for new players only.",
 };
 
 export type TranslationKey = keyof typeof en;

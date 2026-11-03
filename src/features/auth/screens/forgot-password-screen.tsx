@@ -235,6 +235,7 @@ export function ForgotPasswordScreen() {
 
       <Button
         title={step === "password" ? t("complete") : t("next")}
+        arrow={step !== "password"}
         loading={submitting}
         onPress={onSubmit}
       />

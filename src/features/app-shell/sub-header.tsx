@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { ThemedText } from "@/components/themed-text";
 import { useToast } from "@/components/toast";
 import { useAuth } from "@/features/auth";
-import { pickHome, useHomeMenu, type MenuItem } from "@/features/menu";
+import { useHomeMenu, useHomeRoute, type MenuItem } from "@/features/menu";
 import { useGoToLogin, useOpenWebPath } from "@/lib/navigation/use-web-navigation";
 import { useTheme } from "@/theme";
 
@@ -29,7 +29,7 @@ export function SubHeader() {
   const { width: windowWidth } = useWindowDimensions();
 
   const menu = useMemo(() => items ?? [], [items]);
-  const homeCode = useMemo(() => pickHome(menu).code, [menu]);
+  const { homeCode } = useHomeRoute();
   // Web `activeHeader`: a tap marks the item at once (even when its screen is not built yet).
   // Whenever the route changes, the route's code replaces it if the route has one, otherwise
   // the previous item stays marked. Adjusted during render instead of in an effect.

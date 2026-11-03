@@ -202,12 +202,19 @@ export function refreshSession(): Promise<string> {
  * refresh and one retry. Resolves with the whole envelope; rejects with ApiError.
  */
 export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<ApiEnvelope<T>> {
+  const usedToken = tokenStore.getAccessToken();
   try {
-    return await send<T>(path, options, tokenStore.getAccessToken());
+    return await send<T>(path, options, usedToken);
   } catch (error) {
     const isAuthPath = AUTH_PATHS.some((p) => path.includes(p)) || isSignedPath(path);
     if (!(error instanceof ApiError) || error.status !== 401 || isAuthPath) throw error;
     if (!tokenStore.getRefreshToken()) throw error;
+
+    // Another request already rotated the tokens while this one was in flight: retry with the
+    // new access token instead of spending the single-use refresh token again (web
+    // AxiosClient.ts:92-104, "token already changed").
+    const current = tokenStore.getAccessToken();
+    if (current && current !== usedToken) return send<T>(path, options, current);
 
     const token = await refreshSession();
     return send<T>(path, options, token);

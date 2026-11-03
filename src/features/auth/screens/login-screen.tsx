@@ -96,7 +96,9 @@ export function LoginScreen() {
   const signIn = async (passwordToUse: string) => {
     try {
       const ok = await login({ phone, password: passwordToUse, remember });
-      if (ok) router.replace(resolveReturnTo(returnTo));
+      // dismissTo pops back to the target when it is already in the stack (Home usually is,
+      // under the auth screens) instead of pushing a second copy; otherwise it replaces.
+      if (ok) router.dismissTo(resolveReturnTo(returnTo));
     } catch (error) {
       if (
         error instanceof ApiError &&
@@ -188,7 +190,10 @@ export function LoginScreen() {
       try {
         await authApi.setPassword({ password, transactionId });
       } catch (error) {
-        setApiError(apiErrorMessage(error) ?? t("anErrorOccurred"));
+        // Inline under re_password and in the banner, like the web (spec Phần B §1.1 step 3).
+        const message = apiErrorMessage(error) ?? t("anErrorOccurred");
+        setErrors({ rePassword: message });
+        setApiError(message);
         return;
       }
       setStep("password");
@@ -323,6 +328,7 @@ export function LoginScreen() {
 
       <Button
         title={step === "phone" || step === "otp" ? t("next") : t("login")}
+        arrow={step === "phone" || step === "otp"}
         loading={submitting}
         onPress={onSubmit}
       />

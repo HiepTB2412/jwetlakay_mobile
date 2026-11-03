@@ -24,6 +24,9 @@ export const queryKeys = {
   homeMenu: ["home-menu"] as const,
   topOddWin: ["top-odd-win"] as const,
   newsPopup: ["news-popup"] as const,
+  luckySpin: [USER_SCOPE, "lucky-spin"] as const,
+  luckySpinGuest: ["lucky-spin-guest"] as const,
+  luckySpinHistory: (page: number) => [USER_SCOPE, "lucky-spin-history", page] as const,
 };
 
 export function clearUserQueries(): void {

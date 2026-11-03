@@ -11,6 +11,8 @@ import {
 import { useTranslation } from "react-i18next";
 
 import { useToast } from "@/components/toast";
+import { luckySpinApi } from "@/features/lucky-spin/api";
+import { markLuckySpinVisited, refreshLuckySpinVisited } from "@/features/lucky-spin/visited";
 import { applyUserLanguage } from "@/i18n";
 import { onSessionExpired, SessionExpiredError } from "@/lib/api/client";
 import { apiErrorMessage, isAuthRejection } from "@/lib/api/errors";
@@ -78,7 +80,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       if (active) setIsAuthenticated(true);
       try {
-        await loadUser();
+        // React Query `retry: 1` on the web: one more try for network / server errors.
+        await loadUser().catch((error) => {
+          if (isAuthRejection(error) || error instanceof SessionExpiredError) throw error;
+          return loadUser();
+        });
+        void refreshLuckySpinVisited();
       } catch (error) {
         if (!active) return;
         if (isAuthRejection(error) || error instanceof SessionExpiredError) {
@@ -124,6 +131,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       try {
         await loadUser();
+        // Web AuthContext after login: mark the Lucky Spin visit and load the list (result unused).
+        void markLuckySpinVisited();
+        luckySpinApi.list().catch(() => {});
         return true;
       } catch (error) {
         toast.error(apiErrorMessage(error) ?? t("something_went_wrong"));
@@ -148,7 +158,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const getUser = useCallback(async () => {
-    await loadUser().catch(() => {});
+    try {
+      await loadUser();
+      void refreshLuckySpinVisited();
+    } catch {
+      // Keep the current profile.
+    }
   }, [loadUser]);
 
   const updateUser = useCallback((patch: Partial<User>) => {
