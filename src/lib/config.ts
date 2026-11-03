@@ -62,6 +62,12 @@ export const lotterySigning = {
   secretKey: process.env.EXPO_PUBLIC_LOTTERY_SECRET_KEY ?? "",
 };
 
+/**
+ * `channel` sent with bets, max-stake, deposits and withdrawals (spec Phần H §2). The web sends
+ * "WEB" (and "APP" from the super app); the value for this app comes from the backend.
+ */
+export const appChannel = process.env.EXPO_PUBLIC_APP_CHANNEL || "WEB";
+
 // Images: [WEB-PARITY] the web defines VITE_IMAGE_URL_PREFIX and `getPathImage(path) =
 // prefix + path`, but nothing calls it — every screen renders the image URL the API returns
 // (e.g. `src={item.imageMobile}`). The app does the same, so no image prefix is configured.
