@@ -69,3 +69,8 @@ export const WALLET = {
   freeBet: "#00B4D8",
   commission: "#B266F5",
 } as const;
+
+/** Scrims stay the same in both modes. `loading` = web LoadingSpinner backdrop (spec Phần B §0.6). */
+export const SCRIM = {
+  loading: "rgba(0,0,0,0.6)",
+} as const;

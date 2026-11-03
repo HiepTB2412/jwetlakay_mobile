@@ -14,6 +14,7 @@ import { useToast } from "@/components/toast";
 import { applyUserLanguage } from "@/i18n";
 import { onSessionExpired, SessionExpiredError } from "@/lib/api/client";
 import { apiErrorMessage, isAuthRejection } from "@/lib/api/errors";
+import { clearUserQueries } from "@/lib/query/query-client";
 import { tokenStore } from "@/lib/session/token-store";
 
 import { authApi } from "./api";
@@ -103,6 +104,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(
     () =>
       onSessionExpired(() => {
+        clearUserQueries();
         setIsAuthenticated(false);
         setUser(null);
         goHome();
@@ -114,6 +116,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async ({ phone, password, remember }: LoginInput) => {
       const tokens = await authApi.login({ username: phone, password });
       await tokenStore.set(tokens);
+      clearUserQueries();
       setIsAuthenticated(true);
 
       if (remember) await rememberedLogin.save(phone, password);
@@ -136,6 +139,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Revoke in the background; the local session ends immediately either way.
     authApi.logout(refreshToken).catch(() => {});
     await tokenStore.clear();
+    // The web keeps the cached balance until the next login; dropping it now is equivalent
+    // and keeps the previous account's figures out of memory.
+    clearUserQueries();
     setIsAuthenticated(false);
     setUser(null);
     goHome();

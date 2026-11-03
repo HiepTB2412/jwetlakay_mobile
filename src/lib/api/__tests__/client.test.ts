@@ -3,15 +3,26 @@ import { fetch } from "expo/fetch";
 
 import { apiRequest, onSessionExpired } from "@/lib/api/client";
 import { ApiError, apiErrorMessage } from "@/lib/api/errors";
+import { hmacSha256Hex } from "@/lib/crypto/hmac";
+import {
+  getClockSkew,
+  onSignatureRejected,
+  resetClockSkew,
+  resetRequestSigner,
+} from "@/lib/api/signed-requests";
 import { tokenStore } from "@/lib/session/token-store";
 
 jest.mock("expo/fetch", () => ({ fetch: jest.fn() }));
 // `apiUrl` lets a test simulate a build without EXPO_PUBLIC_API_URL.
 const mockConfig = { apiUrl: "https://api.test" as string | null };
+const mockSigning = { clientId: "web-app", secret: "" };
 jest.mock("@/lib/config", () => {
   class ConfigError extends Error {}
   return {
     ConfigError,
+    get sportApiSigning() {
+      return mockSigning;
+    },
     getApiUrl: () => {
       if (!mockConfig.apiUrl) throw new ConfigError("EXPO_PUBLIC_API_URL is missing");
       return mockConfig.apiUrl;
@@ -44,7 +55,12 @@ function jwt(expiresInSeconds: number) {
 }
 
 function respond(status: number, body: unknown) {
-  return { ok: status >= 200 && status < 300, status, text: async () => JSON.stringify(body) };
+  return {
+    ok: status >= 200 && status < 300,
+    status,
+    headers: { get: () => null },
+    text: async () => JSON.stringify(body),
+  };
 }
 
 const envelope = (result: unknown) => ({ requestId: "r", errorCode: "00000", message: "OK", result });
@@ -217,5 +233,79 @@ describe("apiRequest", () => {
     expect(error).not.toBeInstanceOf(ApiError);
     expect(apiErrorMessage(error)).toBe("EXPO_PUBLIC_API_URL is missing");
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+});
+
+describe("signed sport-api requests", () => {
+  const SIGNED = "core-read/v1/web/matches";
+
+  afterEach(() => {
+    resetRequestSigner();
+    mockSigning.secret = "";
+    resetClockSkew();
+  });
+
+  it("goes out unsigned when no secret is configured (web dev mode)", async () => {
+    routeFetch(() => respond(200, envelope([])));
+    await apiRequest(SIGNED);
+    expect(calls(SIGNED)[0][1].headers).not.toHaveProperty("X-Signature");
+  });
+
+  it("signs like the web: lowercase hex HMAC-SHA256 of clientId:timestamp", async () => {
+    mockSigning.secret = "key";
+    routeFetch(() => respond(200, envelope([])));
+
+    await apiRequest(SIGNED);
+
+    const headers = calls(SIGNED)[0][1].headers;
+    expect(headers["X-Client-Id"]).toBe("web-app");
+    expect(headers["X-Signature"]).toBe(hmacSha256Hex(`web-app:${headers["X-Timestamp"]}`, "key"));
+    expect(calls("identity-service")).toHaveLength(0);
+  });
+
+  it("never signs requests outside /core-read/v1/web/", async () => {
+    mockSigning.secret = "key";
+    routeFetch(() => respond(200, envelope(null)));
+    await apiRequest("identity-service/v1/account/info");
+    expect(calls("account/info")[0][1].headers).not.toHaveProperty("X-Signature");
+  });
+
+  it("uses the raw device clock for X-Timestamp, like the web", async () => {
+    mockSigning.secret = "key";
+    jest.useFakeTimers({ now: 1_700_000_000_000, doNotFake: ["setTimeout", "clearTimeout"] });
+    routeFetch(() => respond(200, envelope([])));
+
+    await apiRequest(SIGNED);
+
+    expect(calls(SIGNED)[0][1].headers["X-Timestamp"]).toBe("1700000000000");
+    jest.useRealTimers();
+  });
+
+  it("does not refresh or log out on a 401, and records clock skew until a success", async () => {
+    const skew = { serverTime: 1000, clientTime: 2000 };
+    routeFetch(() => respond(401, { errorCode: "01402", message: "skew", result: skew }));
+
+    const error = await apiRequest(SIGNED).catch((e) => e);
+
+    expect(error).toBeInstanceOf(ApiError);
+    expect(calls("refreshToken")).toHaveLength(0);
+    expect(tokenStore.getAccessToken()).toBe("old-access");
+    expect(getClockSkew()).toEqual(skew);
+
+    routeFetch(() => respond(200, envelope([])));
+    await apiRequest(SIGNED);
+    expect(getClockSkew()).toBeNull();
+  });
+
+  it("reports a rejected signature (01401)", async () => {
+    const listener = jest.fn();
+    const unsubscribe = onSignatureRejected(listener);
+    routeFetch(() => respond(401, { errorCode: "01401", message: "bad signature", result: null }));
+
+    await apiRequest(SIGNED).catch(() => {});
+
+    expect(listener).toHaveBeenCalledTimes(1);
+    expect(getClockSkew()).toBeNull();
+    unsubscribe();
   });
 });

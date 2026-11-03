@@ -19,6 +19,8 @@ export const vi: Record<keyof typeof en, string> = {
   showPassword: "Hiện mật khẩu",
   hidePassword: "Ẩn mật khẩu",
   noContent: "Chưa có nội dung",
+  loading: "Đang tải",
+  sportApiUnavailable: "Tạm thời không tải được tỷ lệ cược. Vui lòng thử lại sau.",
 
   // Auth: shared fields
   login: "Đăng nhập",

@@ -16,6 +16,8 @@ export const en = {
   showPassword: "Show password", // new (accessibility)
   hidePassword: "Hide password", // new (accessibility)
   noContent: "No content available", // new
+  loading: "Loading", // new (accessibility)
+  sportApiUnavailable: "Odds are temporarily unavailable. Please try again later.",
 
   // Auth: shared fields
   login: "Login",

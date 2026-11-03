@@ -5,6 +5,7 @@ import { getApiUrl } from "@/lib/config";
 import { isJwtUnexpired, tokenStore, type Tokens } from "@/lib/session/token-store";
 
 import { ApiError, isAuthRejection, type ApiErrorBody } from "./errors";
+import { handleSignedResponse, isSignedPath, signingHeaders } from "./signed-requests";
 
 /** Success envelope; `errorCode` is "00000" on success (spec Phần A §0). */
 export type ApiEnvelope<T> = {
@@ -12,6 +13,15 @@ export type ApiEnvelope<T> = {
   errorCode: string;
   message: string;
   result: T;
+};
+
+/** Paged list `result` (spec Phần A §0). Pages start at 0, except promotions (Phần H §17). */
+export type Paginated<T> = {
+  data: T[];
+  pageNumber: number;
+  pageSize: number;
+  totalElements: number;
+  totalPages: number;
 };
 
 type Method = "GET" | "POST" | "PUT" | "DELETE";
@@ -24,7 +34,8 @@ export type RequestOptions = {
 
 const TIMEOUT_MS = 30_000;
 
-// 401 from these must never trigger a refresh (the refresh would wait on itself).
+// 401 from these must never trigger a refresh (the refresh would wait on itself). Signed
+// sport-api paths are excluded too: their 401 means a bad signature or clock, not a token.
 const AUTH_PATHS = ["auth/login", "auth/refreshToken", "auth/logout"];
 
 const LOGOUT_PATH = "identity-service/v1/auth/logout";
@@ -47,6 +58,8 @@ async function send<T>(path: string, options: RequestOptions, token: string | nu
     "Accept-Language": i18n.language || "en",
   };
   if (token) headers.Authorization = `Bearer ${token}`;
+  const signed = isSignedPath(path);
+  if (signed) Object.assign(headers, await signingHeaders());
 
   // Outside the try below: a missing EXPO_PUBLIC_API_URL must surface as a ConfigError,
   // not be reported as "no connection".
@@ -85,6 +98,10 @@ async function send<T>(path: string, options: RequestOptions, token: string | nu
   }
 
   if (__DEV__) logFailure(method, url, response.status, data);
+  if (signed) {
+    const body = typeof data === "object" && data !== null ? (data as ApiErrorBody) : undefined;
+    handleSignedResponse(response.status, body?.errorCode, body?.result);
+  }
 
   if (!response.ok) throw new ApiError(response.status, data as ApiErrorBody | string | undefined);
   return data as ApiEnvelope<T>;
@@ -188,7 +205,7 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
   try {
     return await send<T>(path, options, tokenStore.getAccessToken());
   } catch (error) {
-    const isAuthPath = AUTH_PATHS.some((p) => path.includes(p));
+    const isAuthPath = AUTH_PATHS.some((p) => path.includes(p)) || isSignedPath(path);
     if (!(error instanceof ApiError) || error.status !== 401 || isAuthPath) throw error;
     if (!tokenStore.getRefreshToken()) throw error;
 
